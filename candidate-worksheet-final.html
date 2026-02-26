@@ -526,7 +526,10 @@ function getVal(el) {
   return el.innerText.trim() || '(blank)';
 }
 
-function submitAnswers() {
+// ── CONFIG: paste your Google Apps Script Web App URL below ──
+const SUBMIT_URL = 'PASTE_YOUR_SCRIPT_URL_HERE';
+
+function collectAnswers() {
   const candidate = getVal(document.querySelector('.doc-candidate-bar .c-field:nth-child(1) input'));
   const date      = getVal(document.querySelector('.doc-candidate-bar .c-field:nth-child(2) input'));
   const intervwr  = getVal(document.querySelector('.doc-candidate-bar .c-field:nth-child(3) input'));
@@ -576,7 +579,7 @@ function submitAnswers() {
   const s5b = getVal(s5textareas[0]);
   const s5c = getVal(s5textareas[1]);
 
-  const body =
+  const fullText =
 `RECESS — SENIOR ACCOUNTANT ASSESSMENT SUBMISSION
 =================================================
 Candidate:   ${candidate}
@@ -620,9 +623,56 @@ C) AI Workflow / Time-Saving Response:
 ${s5c}
 `;
 
-  const subject = encodeURIComponent(`Assessment Submission — ${candidate} — ${date}`);
-  const bodyEnc = encodeURIComponent(body);
-  window.location.href = `mailto:ines@recess.is?subject=${subject}&body=${bodyEnc}`;
+  return { candidate, date, interviewer: intervwr,
+    s1_rankings: s1, s1_reasoning: s1c,
+    s2_responses: s2, s3_sop: s3,
+    s4_checklist: s4checklist, s4_je: s4je,
+    s5a, s5b, s5c, fullText };
+}
+
+async function submitAnswers() {
+  const btn     = document.querySelector('[onclick="submitAnswers()"]');
+  const msgEl   = btn.previousElementSibling;
+  const payload = collectAnswers();
+
+  // Loading state
+  btn.textContent = 'Submitting…';
+  btn.disabled    = true;
+  btn.style.opacity = '0.75';
+
+  let sent = false;
+
+  // ── Primary: Google Apps Script → Sheet + Email ──
+  if (SUBMIT_URL && SUBMIT_URL !== 'PASTE_YOUR_SCRIPT_URL_HERE') {
+    try {
+      await fetch(SUBMIT_URL, {
+        method:  'POST',
+        mode:    'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body:    JSON.stringify(payload)
+      });
+      sent = true;
+    } catch (err) {
+      console.warn('Primary submit failed, falling back to email:', err);
+    }
+  }
+
+  if (sent) {
+    // ── Success ──
+    btn.textContent      = '✓ Submitted Successfully!';
+    btn.style.background = '#16a34a';
+    btn.style.opacity    = '1';
+    msgEl.innerHTML      = '<strong style="color:#16a34a;font-size:14px;">✓ Your answers have been submitted to the Recess team. You\'re all set — thank you!</strong>';
+  } else {
+    // ── Fallback: mailto ──
+    btn.textContent      = 'Opening your email…';
+    btn.style.background = '#ca8a04';
+    btn.style.opacity    = '1';
+    msgEl.innerHTML      = '<strong style="color:#ca8a04;font-size:13px;">Opening your email client as a backup — please hit Send when it opens.</strong>';
+    const subject = encodeURIComponent(`Assessment Submission — ${payload.candidate} — ${payload.date}`);
+    const bodyEnc = encodeURIComponent(payload.fullText);
+    window.location.href = `mailto:ines@recess.is?subject=${subject}&body=${bodyEnc}`;
+  }
 }
 </script>
 </body>
