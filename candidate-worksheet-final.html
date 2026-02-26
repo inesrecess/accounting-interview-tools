@@ -288,7 +288,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         <div class="scenario-card-title">CFO Sign-Off Blocking Close — Deadline Today</div>
       </div>
       <div class="scenario-card-body">
-        <div class="scenario-description">You need your CFO to <strong>review and approve the financials before you can close the books — today is your deadline</strong> and they haven't responded to your requests. What do you do in Asana (and beyond)?</div>
+        <div class="scenario-description">You need your CFO to <strong>review and approve the financials before you can close the books — today is your deadline</strong> and they haven't responded to your requests. What do you do?</div>
         <div class="scenario-response" contenteditable="true" data-placeholder="Describe your escalation approach — what you'd do in Asana, how you'd document it, and what else you'd try…"></div>
       </div>
     </div>
@@ -383,17 +383,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         </tr>
         <tr>
           <td><input type="checkbox" class="step-check" /></td>
-          <td><div class="step-label">5. Check AP inbox for any unrecorded bills or accruals</div><div class="step-hint">Review invoices received but not yet entered</div></td>
-          <td class="finding-cell"><textarea class="finding-input" placeholder="Any bills received but not booked?"></textarea></td>
-        </tr>
-        <tr>
-          <td><input type="checkbox" class="step-check" /></td>
-          <td><div class="step-label">6. Review expense accounts for misclassifications or capex coded as opex</div><div class="step-hint">Scan each expense line — does the coding make sense?</div></td>
+          <td><div class="step-label">5. Review expense accounts for misclassifications or capex coded as opex</div><div class="step-hint">Scan each expense line — does the coding make sense?</div></td>
           <td class="finding-cell"><textarea class="finding-input" placeholder="Any items that should be capitalized or recoded?"></textarea></td>
         </tr>
         <tr>
           <td><input type="checkbox" class="step-check" /></td>
-          <td><div class="step-label">7. Flag any expense variance &gt;20% month-over-month for explanation</div><div class="step-hint">Compare each line to prior month column</div></td>
+          <td><div class="step-label">6. Flag any expense variance &gt;20% month-over-month for explanation</div><div class="step-hint">Compare each line to prior month column</div></td>
           <td class="finding-cell"><textarea class="finding-input" placeholder="Which accounts have significant variances? Any explanations?"></textarea></td>
         </tr>
       </tbody>
@@ -454,40 +449,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   </div>
 
   <!-- ══════════════════════════════════════════
-       SECTION 5 — AI FLUENCY (7 min)
+       SECTION 5 — GENERAL QUESTIONS (7 min)
   ══════════════════════════════════════════ -->
   <div class="section-wrapper">
     <div class="section-header">
       <div class="section-num">5</div>
       <div>
-        <div class="section-title">AI Fluency</div>
-        <div class="section-meta">Prompt Writing + Verification + Discussion · 7 minutes</div>
+        <div class="section-title">General Questions</div>
+        <div class="section-meta">Discussion · 7 minutes</div>
       </div>
       <div class="section-badge">⏱ 7 min</div>
     </div>
 
-    <div class="scenario-box">
-      <strong class="label">Scenario</strong>
-      Marketing expense jumped from <strong>$10,200 in December</strong> to <strong>$31,500 in January</strong> (+209%).
-      The CFO wants a brief written explanation for the board materials.
-    </div>
-
-    <!-- Part A: Prompt -->
-    <div class="q-label" style="margin-bottom:10px"><div class="q-letter">A</div> Write the AI prompt you would use to draft a variance analysis narrative for the CFO:</div>
-    <div class="prompt-container">
-      <div class="prompt-header">🤖 Your AI Prompt</div>
-      <div class="prompt-write" contenteditable="true"></div>
-    </div>
-
-    <!-- Part B: open free text -->
-    <div class="q-label" style="margin-bottom:10px"><div class="q-letter">B</div> Before sending the AI's output to the CFO, what steps would you take?</div>
+    <!-- Part A: open free text -->
+    <div class="q-label" style="margin-bottom:10px"><div class="q-letter">A</div> Before sending the AI's output to the CFO, what steps would you take?</div>
     <div class="verify-open-box">
       <div class="verify-open-header">Walk us through everything you would check or verify before this goes to the CFO:</div>
       <textarea class="verify-open-textarea" placeholder="Write your answer here…"></textarea>
     </div>
 
-    <!-- Part C: Written response -->
-    <div class="q-label" style="margin-bottom:10px"><div class="q-letter">C</div> Briefly describe one accounting task you use AI for today — or wish you could — that would save significant time each month. Or, if you were building our accounting team's AI toolkit, what's the first workflow you'd automate at Recess?</div>
+    <!-- Part B: Written response -->
+    <div class="q-label" style="margin-bottom:10px"><div class="q-letter">B</div> Briefly describe one accounting task you use AI for today — or wish you could — that would save significant time each month. Or, if you were building our accounting team's AI toolkit, what's the first workflow you'd automate at Recess?</div>
     <div class="verify-open-box">
       <div class="verify-open-header">Your response (a few sentences is fine):</div>
       <textarea class="verify-open-textarea" style="min-height:100px;" placeholder="Write your answer here…"></textarea>
@@ -574,10 +556,9 @@ function collectAnswers() {
   });
 
   // S5
-  const s5a = getVal(document.querySelector('.prompt-write'));
   const s5textareas = document.querySelectorAll('.verify-open-textarea');
-  const s5b = getVal(s5textareas[0]);
-  const s5c = getVal(s5textareas[1]);
+  const s5a = getVal(s5textareas[0]);
+  const s5b = getVal(s5textareas[1]);
 
   const fullText =
 `RECESS — SENIOR ACCOUNTANT ASSESSMENT SUBMISSION
@@ -611,23 +592,20 @@ ${s4checklist}
 Correcting Journal Entries:
 ${s4je}
 ─────────────────────────────────────
-SECTION 5 — AI FLUENCY
+SECTION 5 — GENERAL QUESTIONS
 ─────────────────────────────────────
-A) AI Prompt:
+A) Pre-Send Verification Steps:
 ${s5a}
 
-B) Pre-Send Verification Steps:
+B) AI Workflow / Time-Saving Response:
 ${s5b}
-
-C) AI Workflow / Time-Saving Response:
-${s5c}
 `;
 
   return { candidate, date, interviewer: intervwr,
     s1_rankings: s1, s1_reasoning: s1c,
     s2_responses: s2, s3_sop: s3,
     s4_checklist: s4checklist, s4_je: s4je,
-    s5a, s5b, s5c, fullText };
+    s5a, s5b, fullText };
 }
 
 async function submitAnswers() {
