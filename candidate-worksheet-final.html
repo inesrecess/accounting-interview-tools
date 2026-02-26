@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recess — Senior Accountant Live Assessment</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #1a1a1a; --muted: #6b7280; --light: #f9fafb; --border: #e5e7eb;
+  --brand: #6366f1; --brand-light: #ede9fe;
+  --green: #16a34a; --green-light: #f0fdf4;
+  --yellow: #ca8a04; --yellow-light: #fefce8;
+  --red: #dc2626; --red-light: #fef2f2;
+  --blue: #2563eb; --blue-light: #eff6ff;
+  --slack-bg: #1a1d21; --slack-sidebar: #19171d; --slack-text: #d1d2d3;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f3f4f6; color: var(--ink); padding: 32px 20px; }
+.page { max-width: 860px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); overflow: hidden; }
+
+/* ── HEADER ── */
+.doc-header { background: var(--brand); padding: 28px 40px; color: white; }
+.doc-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.doc-logo { display: flex; align-items: center; gap: 10px; }
+.doc-logo-mark { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; }
+.doc-logo-name { font-size: 20px; font-weight: 700; }
+.doc-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
+.doc-subtitle { font-size: 14px; opacity: 0.8; margin-bottom: 16px; }
+.doc-meta { font-size: 12px; opacity: 0.75; text-align: right; }
+.doc-candidate-bar { display: flex; gap: 32px; background: rgba(255,255,255,0.12); border-radius: 8px; padding: 12px 16px; font-size: 13px; }
+.c-field { display: flex; align-items: center; gap: 8px; flex: 1; }
+.c-field label { opacity: 0.75; white-space: nowrap; }
+.c-field input { background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.4); color: white; font-size: 13px; outline: none; flex: 1; padding: 2px 4px; }
+.c-field input::placeholder { color: rgba(255,255,255,0.4); }
+
+/* ── INSTRUCTIONS BAR ── */
+.instructions-bar { background: var(--brand-light); border-bottom: 2px solid var(--brand); padding: 12px 40px; display: flex; gap: 24px; font-size: 12px; color: #4338ca; }
+.instr-item { display: flex; align-items: center; gap: 6px; }
+
+/* ── SECTION WRAPPER ── */
+.section-wrapper { padding: 32px 40px; border-bottom: 2px solid var(--border); }
+.section-wrapper:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+.section-num { width: 34px; height: 34px; border-radius: 50%; background: var(--brand); color: white; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.section-title { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+.section-meta { font-size: 12px; color: var(--muted); }
+.section-badge { margin-left: auto; background: var(--brand-light); color: var(--brand); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; align-self: flex-start; margin-top: 4px; }
+
+/* ── SCENARIO BOX ── */
+.scenario-box { background: var(--light); border: 1px solid var(--border); border-left: 4px solid var(--brand); border-radius: 6px; padding: 14px 18px; font-size: 14px; line-height: 1.7; margin-bottom: 20px; }
+.scenario-box strong.label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--brand); display: block; margin-bottom: 4px; }
+
+/* ── INBOX TABLE (S1) ── */
+.inbox-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+.inbox-table th { background: var(--light); border: 1px solid var(--border); padding: 8px 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); text-align: left; }
+.inbox-table td { border: 1px solid var(--border); padding: 9px 10px; vertical-align: top; }
+.inbox-table td:nth-child(1) { width: 28px; text-align: center; font-weight: 700; color: var(--muted); background: var(--light); }
+.inbox-source { font-size: 10px; color: var(--muted); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
+.inbox-msg { font-size: 13px; line-height: 1.4; }
+.write-cell { outline: none; min-height: 28px; display: block; width: 100%; font-size: 13px; color: var(--ink); }
+.write-cell:empty::before { content: attr(data-placeholder); color: #d1d5db; font-style: italic; }
+.reasoning-box { border: 1px solid var(--border); border-radius: 6px; padding: 12px; min-height: 80px; font-size: 14px; line-height: 1.7; outline: none; }
+.reasoning-box:empty::before { content: "Explain your reasoning for your top 3 priorities…"; color: #d1d5db; font-style: italic; }
+.reasoning-box:focus { border-color: var(--brand); }
+.q-label { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.q-letter { width: 22px; height: 22px; background: var(--brand-light); color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+/* ── ASANA SCENARIO CARDS (S2) ── */
+.scenario-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+.scenario-card-header { background: #f9fafb; padding: 10px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.scenario-num { width: 24px; height: 24px; border-radius: 50%; background: var(--brand); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.scenario-card-title { font-size: 13px; font-weight: 600; }
+.scenario-card-body { padding: 14px 16px; }
+.scenario-description { font-size: 13px; color: var(--muted); margin-bottom: 10px; line-height: 1.6; padding: 10px 12px; background: var(--light); border-radius: 6px; border-left: 3px solid var(--brand); }
+.scenario-response { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-size: 13px; min-height: 80px; outline: none; width: 100%; font-family: inherit; line-height: 1.6; color: var(--ink); display: block; }
+.scenario-response:empty::before { content: attr(data-placeholder); color: #d1d5db; font-style: italic; pointer-events: none; }
+.scenario-response:focus { border-color: var(--brand); }
+
+/* ── SOP (S3) — open text ── */
+.sop-open-box { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.sop-open-header { background: var(--brand-light); padding: 12px 16px; border-bottom: 1px solid #ddd6fe; }
+.sop-open-header-title { font-size: 12px; font-weight: 700; color: #4338ca; text-transform: uppercase; letter-spacing: 0.06em; }
+.sop-open-header-hint { font-size: 12px; color: #5b21b6; margin-top: 3px; font-style: italic; }
+.sop-open-body { padding: 16px; }
+.sop-open-textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 14px; font-size: 13px; outline: none; font-family: inherit; min-height: 420px; resize: vertical; background: white; color: var(--ink); line-height: 1.8; }
+.sop-open-textarea:focus { border-color: var(--brand); }
+.sop-open-textarea::placeholder { color: #d1d5db; font-style: italic; }
+
+/* ── CLOSE CHECKLIST (S4) ── */
+.checklist-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+.checklist-table th { background: var(--light); border: 1px solid var(--border); padding: 8px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); text-align: left; }
+.checklist-table td { border: 1px solid var(--border); padding: 10px 12px; vertical-align: top; }
+.checklist-table td:nth-child(1) { width: 28px; text-align: center; }
+.checklist-table td:nth-child(2) { width: 52%; }
+.step-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--brand); }
+.step-label { font-size: 13px; line-height: 1.5; }
+.step-hint { font-size: 11px; color: var(--muted); margin-top: 2px; font-style: italic; }
+.finding-input { border: none; outline: none; width: 100%; font-size: 13px; font-family: inherit; color: var(--ink); padding: 2px 0; min-height: 40px; resize: none; }
+.finding-input::placeholder { color: #d1d5db; font-style: italic; }
+.finding-cell { background: white; }
+
+.tb-section-title { font-size: 12px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--brand-light); }
+.tb-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'Courier New', monospace; margin-bottom: 8px; }
+.tb-table th { background: var(--light); border: 1px solid var(--border); padding: 7px 10px; font-family: -apple-system, sans-serif; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.tb-table th:not(:first-child) { text-align: right; }
+.tb-table td { border: 1px solid var(--border); padding: 6px 10px; }
+.tb-table td:not(:first-child) { text-align: right; }
+.tb-table .group-row td { background: var(--brand-light); font-family: -apple-system, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--brand); }
+.support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.support-card { border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-size: 12px; line-height: 1.6; background: var(--light); }
+.support-card-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+.je-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.je-table th { background: var(--light); border: 1px solid var(--border); padding: 8px 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); text-align: left; }
+.je-table td { border: 1px solid var(--border); padding: 10px; vertical-align: top; }
+.je-table td:nth-child(1) { width: 24px; text-align: center; background: var(--light); font-weight: 700; color: var(--muted); }
+.je-write { outline: none; min-height: 44px; display: block; width: 100%; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6; color: var(--ink); }
+.je-write:empty::before { content: attr(data-placeholder); color: #d1d5db; font-style: italic; font-family: -apple-system, sans-serif; font-size: 12px; }
+
+/* ── AI FLUENCY (S5) ── */
+.prompt-container { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+.prompt-header { background: var(--light); padding: 8px 14px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); border-bottom: 1px solid var(--border); }
+.prompt-write { padding: 14px; min-height: 100px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7; outline: none; color: var(--ink); }
+.prompt-write:empty::before { content: "Write your AI prompt here…"; color: #d1d5db; font-style: italic; font-family: -apple-system, sans-serif; }
+.prompt-write:focus { background: rgba(99,102,241,0.02); }
+
+.verify-open-box { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+.verify-open-header { background: var(--light); padding: 10px 14px; font-size: 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); }
+.verify-open-textarea { width: 100%; border: none; padding: 14px; font-size: 13px; outline: none; font-family: inherit; min-height: 160px; resize: vertical; background: white; color: var(--ink); line-height: 1.7; }
+.verify-open-textarea::placeholder { color: #d1d5db; font-style: italic; }
+
+.discussion-box { background: var(--brand-light); border: 1px solid #c4b5fd; border-radius: 8px; padding: 16px; }
+.discussion-box-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #4338ca; margin-bottom: 10px; }
+.discussion-note { font-size: 12px; color: #5b21b6; line-height: 1.5; font-style: italic; }
+
+/* ── FOOTER ── */
+.doc-footer { background: var(--light); border-top: 1px solid var(--border); padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+@media (max-width: 600px) { .section-wrapper { padding: 24px 20px; } .doc-header { padding: 20px; } .support-grid { grid-template-columns: 1fr; } .instructions-bar { flex-wrap: wrap; gap: 12px; } .doc-candidate-bar { flex-direction: column; gap: 12px; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="doc-header-top">
+      <div class="doc-logo">
+        <div class="doc-logo-mark">R</div>
+        <div class="doc-logo-name">Recess</div>
+      </div>
+      <div class="doc-meta">Senior Accountant Live Assessment<br>Confidential — Please do not share</div>
+    </div>
+    <div class="doc-title">Live Practical Assessment</div>
+    <div class="doc-subtitle">Work through each section below. Type your answers directly in this document.</div>
+    <div class="doc-candidate-bar">
+      <div class="c-field"><label>Candidate:</label><input type="text" placeholder="Your name" /></div>
+      <div class="c-field"><label>Date:</label><input type="text" id="date-field" placeholder="Today's date" /></div>
+      <div class="c-field"><label>Interviewer:</label><input type="text" placeholder="Interviewer name" /></div>
+    </div>
+  </div>
+
+  <!-- INSTRUCTIONS BAR -->
+  <div class="instructions-bar">
+    <div class="instr-item">📋 <strong>~52 minutes total · 5 sections</strong></div>
+    <div class="instr-item">🛠 <strong>Use any tools you'd normally use</strong> — AI, calculator, reference materials</div>
+    <div class="instr-item">⌨️ <strong>Type answers directly below each question</strong></div>
+    <div class="instr-item">🎯 <strong>No trick questions</strong> — we want to see how you work</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 1 — INBOX TRIAGE (10 min)
+  ══════════════════════════════════════════ -->
+  <div class="section-wrapper">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div>
+        <div class="section-title">Monday Morning Inbox</div>
+        <div class="section-meta">Organization &amp; Prioritization · 10 minutes</div>
+      </div>
+      <div class="section-badge">⏱ 10 min</div>
+    </div>
+
+    <div class="scenario-box">
+      <strong class="label">Scenario</strong>
+      You're the Senior Accountant at Recess. You just returned from 4 days of PTO. It's Monday morning, 9 AM.
+      <strong>Month-end close is due Wednesday EOD.</strong> Below are 12 items waiting for your attention.
+    </div>
+
+    <p style="font-size:13px;margin-bottom:12px;line-height:1.6">
+      <strong>(A)</strong> Rank each item 1–12 (1 = most urgent) &nbsp;·&nbsp;
+      <strong>(B)</strong> Mark: <strong>H</strong> = Handle myself &nbsp;|&nbsp; <strong>D</strong> = Delegate &nbsp;|&nbsp; <strong>W</strong> = Can wait &nbsp;·&nbsp;
+      <strong>(C)</strong> Explain your reasoning for your <strong>top 3</strong> priorities below the table
+    </p>
+
+    <table class="inbox-table">
+      <thead><tr><th>#</th><th>Item</th><th>Rank (1–12)</th><th>H / D / W</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><div class="inbox-source">📧 Email — CEO</div><div class="inbox-msg">Board meeting moved to Thursday. Need preliminary financials by Wednesday EOD.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>2</td><td><div class="inbox-source">💬 Slack — AP Clerk</div><div class="inbox-msg">Two vendor invoices totaling $47K are missing approvals. Vendors are calling.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>3</td><td><div class="inbox-source">🔔 System Notification</div><div class="inbox-msg">Bank feed in QBO stopped syncing Friday. 3 days of transactions not imported.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>4</td><td><div class="inbox-source">📧 Email — External Auditors</div><div class="inbox-msg">Please send us the Q4 depreciation schedule by end of week.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>5</td><td><div class="inbox-source">✅ Asana Task — Overdue</div><div class="inbox-msg">Reconcile petty cash ($500 balance) — due last Friday.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>6</td><td><div class="inbox-source">💬 Slack — Sales VP</div><div class="inbox-msg">Can you explain why my department's travel budget shows 200% spent? The CEO is asking.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>7</td><td><div class="inbox-source">📧 Email — HR</div><div class="inbox-msg">New hire starts Wednesday. Need payroll setup and QBO access before then.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>8</td><td><div class="inbox-source">📞 Voicemail — Insurance Broker</div><div class="inbox-msg">Annual renewal paperwork due by Friday. $24K premium.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>9</td><td><div class="inbox-source">📅 Calendar</div><div class="inbox-msg">Monthly 1:1 with CFO — today at 2 PM.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>10</td><td><div class="inbox-source">📧 Email — Tax Advisor</div><div class="inbox-msg">Extension filing deadline April 15. Need your review of the draft by next Monday.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>11</td><td><div class="inbox-source">✅ Asana Notification</div><div class="inbox-msg">Three team members haven't logged hours for last week.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+        <tr><td>12</td><td><div class="inbox-source">💬 Slack — Staff Accountant</div><div class="inbox-msg">I found a $12K discrepancy in the January bank reconciliation — not sure what to do.</div></td><td><div class="write-cell" contenteditable="true" data-placeholder="—"></div></td><td><div class="write-cell" contenteditable="true" data-placeholder="H/D/W"></div></td></tr>
+      </tbody>
+    </table>
+
+    <div class="q-label"><div class="q-letter">C</div> Explain your reasoning for your top 3 priorities:</div>
+    <div class="reasoning-box" contenteditable="true"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 2 — ASANA WORKFLOW DESIGN (8 min)
+  ══════════════════════════════════════════ -->
+  <div class="section-wrapper">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div>
+        <div class="section-title">Task &amp; Workflow Management</div>
+        <div class="section-meta">Asana process design · 8 minutes · ~1–2 min per scenario</div>
+      </div>
+      <div class="section-badge">⏱ 8 min</div>
+    </div>
+
+    <div class="scenario-box">
+      <strong class="label">Instructions</strong>
+      We use <strong>Asana</strong> as our main work management system. For each scenario below, briefly describe how you'd set it up or handle it — what the project or task structure would look like, who would be involved, and how you'd make sure nothing falls through the cracks.
+    </div>
+
+    <!-- Scenario 1 -->
+    <div class="scenario-card">
+      <div class="scenario-card-header">
+        <div class="scenario-num">1</div>
+        <div class="scenario-card-title">Month-End Close Process</div>
+      </div>
+      <div class="scenario-card-body">
+        <div class="scenario-description">You own the month-end close. How would you set it up in Asana to make it <strong>repeatable and reliable every month</strong> — so the team always knows what to do, who's responsible, and when it's due?</div>
+        <div class="scenario-response" contenteditable="true" data-placeholder="Describe your Asana setup — project type, task structure, recurrence, deadlines, assignees, dependencies…"></div>
+      </div>
+    </div>
+
+    <!-- Scenario 2 — title stripped of "Weekly Recurring Team Tasks" -->
+    <div class="scenario-card">
+      <div class="scenario-card-header">
+        <div class="scenario-num">2</div>
+        <div class="scenario-card-title">Recurring Operational Tasks</div>
+      </div>
+      <div class="scenario-card-body">
+        <div class="scenario-description">Your team has tasks that must happen on a regular cadence — processing the AP inbox, approving bills, reconciling petty cash. How do you manage these in Asana so they're always assigned, visible, and completed on time?</div>
+        <div class="scenario-response" contenteditable="true" data-placeholder="Describe your approach — task structure, frequency, assignees, how you track completion…"></div>
+      </div>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="scenario-card">
+      <div class="scenario-card-header">
+        <div class="scenario-num">3</div>
+        <div class="scenario-card-title">Quarter-Long Improvement Goal</div>
+      </div>
+      <div class="scenario-card-body">
+        <div class="scenario-description">This quarter you're leading an initiative to <strong>improve the accounts payable process</strong> — a 3-month goal with multiple workstreams and stakeholders including your CFO. How would you structure and track this in Asana?</div>
+        <div class="scenario-response" contenteditable="true" data-placeholder="Describe your project structure — milestones, timeline, stakeholders, how you'd report progress…"></div>
+      </div>
+    </div>
+
+    <!-- Scenario 4 -->
+    <div class="scenario-card">
+      <div class="scenario-card-header">
+        <div class="scenario-num">4</div>
+        <div class="scenario-card-title">Cross-Team Bug: Invoices Not Syncing to QuickBooks</div>
+      </div>
+      <div class="scenario-card-body">
+        <div class="scenario-description">You discover that vendor invoices <strong>stopped syncing from your billing system to QuickBooks 2 days ago</strong>. You need the engineering team to investigate and fix it urgently — this is impacting your ability to close the month. How do you handle this in Asana?</div>
+        <div class="scenario-response" contenteditable="true" data-placeholder="Describe how you'd create and structure this task — urgency, context, who you'd assign it to, what you'd include, how you'd follow up…"></div>
+      </div>
+    </div>
+
+    <!-- Scenario 5 -->
+    <div class="scenario-card">
+      <div class="scenario-card-header">
+        <div class="scenario-num">5</div>
+        <div class="scenario-card-title">CFO Sign-Off Blocking Close — Deadline Today</div>
+      </div>
+      <div class="scenario-card-body">
+        <div class="scenario-description">You need your CFO to <strong>review and approve the financials before you can close the books — today is your deadline</strong> and they haven't responded to your requests. What do you do in Asana (and beyond)?</div>
+        <div class="scenario-response" contenteditable="true" data-placeholder="Describe your escalation approach — what you'd do in Asana, how you'd document it, and what else you'd try…"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 3 — SOP WRITING (12 min) — open text
+  ══════════════════════════════════════════ -->
+  <div class="section-wrapper">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div>
+        <div class="section-title">Process Documentation</div>
+        <div class="section-meta">Standard Operating Procedure · 12 minutes</div>
+      </div>
+      <div class="section-badge">⏱ 12 min</div>
+    </div>
+
+    <div class="scenario-box">
+      <strong class="label">Scenario</strong>
+      Recess just hired a part-time bookkeeper who starts next week. You need to write a document
+      so they can perform the <strong>monthly bank reconciliation in QuickBooks Online</strong> without your supervision.
+      Recess has 2 checking accounts and 1 corporate credit card.
+      <br><br>
+      Write whatever you'd hand to that bookkeeper on day one — clear enough that they could follow it independently.
+    </div>
+
+    <div class="sop-open-box">
+      <div class="sop-open-header">
+        <div class="sop-open-header-title">Your Response</div>
+        <div class="sop-open-header-hint">Write freely — structure it however makes sense to you</div>
+      </div>
+      <div class="sop-open-body">
+        <textarea class="sop-open-textarea" placeholder="Write your response here…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 4 — MONTH-END CLOSE (15 min)
+  ══════════════════════════════════════════ -->
+  <div class="section-wrapper">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div>
+        <div class="section-title">Month-End Close &amp; Audit — Following the Checklist</div>
+        <div class="section-meta">Technical Accounting · 15 minutes · Most Important Section</div>
+      </div>
+      <div class="section-badge">⏱ 15 min</div>
+    </div>
+
+    <div class="scenario-box">
+      <strong class="label">Scenario</strong>
+      It's January 31st. You're performing month-end close for <strong>Greenfield Services LLC</strong> using
+      Recess's standard close checklist below. Work through each checklist item, review the trial balance
+      and supporting documents, and record your finding for each step.
+      Then write the correcting journal entry for every issue you find.
+      <br><br>
+      <em>Note: At least one item on the checklist will come back clean — confirm it correctly rather than inventing a problem.</em>
+    </div>
+
+    <!-- Checklist -->
+    <div class="tb-section-title">Month-End Close Checklist — Work Through Each Step</div>
+    <table class="checklist-table">
+      <thead>
+        <tr>
+          <th>✓</th>
+          <th>Close Checklist Step</th>
+          <th>Your Finding (what did you find? Is it correct or does it need adjustment?)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox" class="step-check" /></td>
+          <td><div class="step-label">1. Confirm cash per books ties to bank reconciliation</div><div class="step-hint">Bank stmt: $86,120 · Outstanding check: $2,400 · Deposit in transit: $600</div></td>
+          <td class="finding-cell"><textarea class="finding-input" placeholder="Does it tie? Show your work…"></textarea></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" class="step-check" /></td>
+          <td><div class="step-label">2. Verify all prepaid accounts have been amortized for the month</div><div class="step-hint">Check Prepaid Insurance balance against policy details</div></td>
+          <td class="finding-cell"><textarea class="finding-input" placeholder="What's the current balance? What should it be?"></textarea></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" class="step-check" /></td>
+          <td><div class="step-label">3. Confirm depreciation has been recorded for the month</div><div class="step-hint">Review Depreciation Expense and Accumulated Depreciation accounts</div></td>
+          <td class="finding-cell"><textarea class="finding-input" placeholder="Has depreciation been recorded? What amount is expected?"></textarea></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" class="step-check" /></td>
+          <td><div class="step-label">4. Review deferred revenue — recognize any portion earned this month</div><div class="step-hint">Check Deferred Revenue balance against contract details</div></td>
+          <td class="finding-cell"><textarea class="finding-input" placeholder="How much should be recognized? What's currently on the books?"></textarea></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" class="step-check" /></td>
+          <td><div class="step-label">5. Check AP inbox for any unrecorded bills or accruals</div><div class="step-hint">Review invoices received but not yet entered</div></td>
+          <td class="finding-cell"><textarea class="finding-input" placeholder="Any bills received but not booked?"></textarea></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" class="step-check" /></td>
+          <td><div class="step-label">6. Review expense accounts for misclassifications or capex coded as opex</div><div class="step-hint">Scan each expense line — does the coding make sense?</div></td>
+          <td class="finding-cell"><textarea class="finding-input" placeholder="Any items that should be capitalized or recoded?"></textarea></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" class="step-check" /></td>
+          <td><div class="step-label">7. Flag any expense variance &gt;20% month-over-month for explanation</div><div class="step-hint">Compare each line to prior month column</div></td>
+          <td class="finding-cell"><textarea class="finding-input" placeholder="Which accounts have significant variances? Any explanations?"></textarea></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Trial Balance -->
+    <div class="tb-section-title">Trial Balance — Greenfield Services LLC — January 31, 2026</div>
+    <table class="tb-table">
+      <thead><tr><th>Account</th><th>Debit</th><th>Credit</th><th>Prior Month (Dec)</th></tr></thead>
+      <tbody>
+        <tr class="group-row"><td colspan="4">Assets</td></tr>
+        <tr><td>Cash — Operating</td><td>$84,320</td><td>—</td><td>$91,600</td></tr>
+        <tr><td>Accounts Receivable</td><td>$127,500</td><td>—</td><td>$118,200</td></tr>
+        <tr><td>Prepaid Insurance</td><td>$18,000</td><td>—</td><td>$0</td></tr>
+        <tr><td>Fixed Assets — Equipment</td><td>$145,000</td><td>—</td><td>$138,800</td></tr>
+        <tr><td>Accumulated Depreciation</td><td>—</td><td>$29,000</td><td>$29,000</td></tr>
+        <tr class="group-row"><td colspan="4">Liabilities</td></tr>
+        <tr><td>Accounts Payable</td><td>—</td><td>$43,200</td><td>$38,900</td></tr>
+        <tr><td>Accrued Liabilities</td><td>—</td><td>$8,500</td><td>$8,500</td></tr>
+        <tr><td>Deferred Revenue</td><td>—</td><td>$18,000</td><td>$0</td></tr>
+        <tr class="group-row"><td colspan="4">Revenue &amp; Expenses</td></tr>
+        <tr><td>Revenue — Consulting</td><td>—</td><td>$212,000</td><td>$198,400</td></tr>
+        <tr><td>Cost of Services</td><td>$98,400</td><td>—</td><td>$95,100</td></tr>
+        <tr><td>Rent Expense</td><td>$12,000</td><td>—</td><td>$12,000</td></tr>
+        <tr><td>Office Supplies</td><td>$9,200</td><td>—</td><td>$1,840</td></tr>
+        <tr><td>Utilities Expense</td><td>$0</td><td>—</td><td>$1,840</td></tr>
+        <tr><td>Depreciation Expense</td><td>$0</td><td>—</td><td>$1,208</td></tr>
+        <tr><td>Marketing Expense</td><td>$31,500</td><td>—</td><td>$10,200</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Supporting Docs -->
+    <div class="tb-section-title">Supporting Documents</div>
+    <div class="support-grid">
+      <div class="support-card"><div class="support-card-title">🏦 Bank Statement — Jan 31</div>Bank statement ending balance: <strong>$86,120</strong><br>Outstanding check #4821: ($2,400)<br>Deposit in transit (Jan 31): +$600<br>Books balance (per TB): $84,320</div>
+      <div class="support-card"><div class="support-card-title">📄 AP Inbox</div>Invoice from Pacific Electric received Jan 28 for January utility service: <strong>$2,100</strong>. Not yet entered in QBO. Payment terms: Net 30.</div>
+      <div class="support-card"><div class="support-card-title">📋 Insurance Policy</div>Annual commercial premium: <strong>$18,000</strong> paid January 1, 2026. Policy covers Jan 1 – Dec 31, 2026.</div>
+      <div class="support-card"><div class="support-card-title">🖥 Fixed Assets Note</div>Annual straight-line depreciation: <strong>$14,500/year</strong>. Last depreciation entry: December 31, 2025.<br><br>MacBook Pro purchased Jan 15 for <strong>$6,200</strong> — coded to Office Supplies.</div>
+      <div class="support-card"><div class="support-card-title">📑 Deferred Revenue</div>Hargrove Corp. prepaid <strong>$18,000</strong> for 6-month consulting engagement (Jan–Jun 2026). Work begins January 1.</div>
+      <div class="support-card"><div class="support-card-title">📊 Marketing Detail</div>January: Trade show deposit $18,000 + digital ads $8,400 + agency $5,100 = $31,500.<br>December total: $10,200.</div>
+    </div>
+
+    <!-- Journal Entries -->
+    <div class="tb-section-title">Correcting Journal Entries</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px">For each issue you identified in the checklist above, write the correcting journal entry:</p>
+    <table class="je-table">
+      <thead><tr><th>#</th><th>Issue Description &amp; Financial Statement Impact</th><th>Journal Entry (DR / CR)</th></tr></thead>
+      <tbody id="je-body">
+        <tr><td>1</td><td><div class="je-write" contenteditable="true" data-placeholder="Describe the issue…"></div></td><td><div class="je-write" contenteditable="true" data-placeholder="DR __________&#10;CR __________"></div></td></tr>
+        <tr><td>2</td><td><div class="je-write" contenteditable="true" data-placeholder="Describe the issue…"></div></td><td><div class="je-write" contenteditable="true" data-placeholder="DR __________&#10;CR __________"></div></td></tr>
+        <tr><td>3</td><td><div class="je-write" contenteditable="true" data-placeholder="Describe the issue…"></div></td><td><div class="je-write" contenteditable="true" data-placeholder="DR __________&#10;CR __________"></div></td></tr>
+        <tr><td>4</td><td><div class="je-write" contenteditable="true" data-placeholder="Describe the issue…"></div></td><td><div class="je-write" contenteditable="true" data-placeholder="DR __________&#10;CR __________"></div></td></tr>
+        <tr><td>5</td><td><div class="je-write" contenteditable="true" data-placeholder="Describe the issue…"></div></td><td><div class="je-write" contenteditable="true" data-placeholder="DR __________&#10;CR __________"></div></td></tr>
+        <tr><td>6</td><td><div class="je-write" contenteditable="true" data-placeholder="Describe the issue…"></div></td><td><div class="je-write" contenteditable="true" data-placeholder="DR __________&#10;CR __________"></div></td></tr>
+      </tbody>
+    </table>
+    <button onclick="addJERow()" style="font-size:12px;color:var(--brand);background:none;border:1px solid var(--brand);border-radius:6px;padding:6px 14px;cursor:pointer;margin-top:4px;">+ Add Row</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 5 — AI FLUENCY (7 min)
+  ══════════════════════════════════════════ -->
+  <div class="section-wrapper">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div>
+        <div class="section-title">AI Fluency</div>
+        <div class="section-meta">Prompt Writing + Verification + Discussion · 7 minutes</div>
+      </div>
+      <div class="section-badge">⏱ 7 min</div>
+    </div>
+
+    <div class="scenario-box">
+      <strong class="label">Scenario</strong>
+      Marketing expense jumped from <strong>$10,200 in December</strong> to <strong>$31,500 in January</strong> (+209%).
+      The CFO wants a brief written explanation for the board materials.
+    </div>
+
+    <!-- Part A: Prompt -->
+    <div class="q-label" style="margin-bottom:10px"><div class="q-letter">A</div> Write the AI prompt you would use to draft a variance analysis narrative for the CFO:</div>
+    <div class="prompt-container">
+      <div class="prompt-header">🤖 Your AI Prompt</div>
+      <div class="prompt-write" contenteditable="true"></div>
+    </div>
+
+    <!-- Part B: open free text -->
+    <div class="q-label" style="margin-bottom:10px"><div class="q-letter">B</div> Before sending the AI's output to the CFO, what steps would you take?</div>
+    <div class="verify-open-box">
+      <div class="verify-open-header">Walk us through everything you would check or verify before this goes to the CFO:</div>
+      <textarea class="verify-open-textarea" placeholder="Write your answer here…"></textarea>
+    </div>
+
+    <!-- Part C: Written response -->
+    <div class="q-label" style="margin-bottom:10px"><div class="q-letter">C</div> Briefly describe one accounting task you use AI for today — or wish you could — that would save significant time each month. Or, if you were building our accounting team's AI toolkit, what's the first workflow you'd automate at Recess?</div>
+    <div class="verify-open-box">
+      <div class="verify-open-header">Your response (a few sentences is fine):</div>
+      <textarea class="verify-open-textarea" style="min-height:100px;" placeholder="Write your answer here…"></textarea>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div style="padding:32px 40px;background:#f9fafb;border-top:2px solid #e5e7eb;text-align:center;">
+    <p style="font-size:13px;color:#6b7280;margin-bottom:16px;">When you've completed all sections, click the button below to submit your answers to the Recess team.</p>
+    <button onclick="submitAnswers()" style="background:#6366f1;color:white;font-size:15px;font-weight:700;padding:14px 40px;border:none;border-radius:8px;cursor:pointer;letter-spacing:0.02em;">Submit Assessment</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <div>Recess — Senior Accountant Live Assessment · Confidential</div>
+    <div>~52 minutes · 5 sections</div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+document.getElementById('date-field').placeholder = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+
+let jeCount = 6;
+function addJERow() {
+  jeCount++;
+  const tbody = document.getElementById('je-body');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${jeCount}</td><td><div class="je-write" contenteditable="true" data-placeholder="Describe the issue…"></div></td><td><div class="je-write" contenteditable="true" data-placeholder="DR __________&#10;CR __________"></div></td>`;
+  tbody.appendChild(tr);
+}
+
+function getVal(el) {
+  if (!el) return '(blank)';
+  if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') return el.value.trim() || '(blank)';
+  return el.innerText.trim() || '(blank)';
+}
+
+function submitAnswers() {
+  const candidate = getVal(document.querySelector('.doc-candidate-bar .c-field:nth-child(1) input'));
+  const date      = getVal(document.querySelector('.doc-candidate-bar .c-field:nth-child(2) input'));
+  const intervwr  = getVal(document.querySelector('.doc-candidate-bar .c-field:nth-child(3) input'));
+
+  // S1 inbox table
+  const inboxRows = document.querySelectorAll('.inbox-table tbody tr');
+  let s1 = '';
+  inboxRows.forEach((tr, i) => {
+    const cells = tr.querySelectorAll('.write-cell');
+    const rank = cells[0] ? cells[0].innerText.trim() || '—' : '—';
+    const hdw  = cells[1] ? cells[1].innerText.trim() || '—' : '—';
+    s1 += `  Item ${i+1}: Rank=${rank}, H/D/W=${hdw}\n`;
+  });
+  const s1c = getVal(document.querySelector('.reasoning-box'));
+
+  // S2 scenarios
+  const s2responses = document.querySelectorAll('.scenario-response');
+  let s2 = '';
+  const s2titles = ['Month-End Close Process','Recurring Operational Tasks','Quarter-Long Improvement Goal','Cross-Team Bug: Invoices Not Syncing','CFO Sign-Off Blocking Close'];
+  s2responses.forEach((el, i) => { s2 += `  Scenario ${i+1} — ${s2titles[i] || ''}:\n  ${el.innerText.trim() || '(blank)'}\n\n`; });
+
+  // S3 SOP
+  const s3 = getVal(document.querySelector('.sop-open-textarea'));
+
+  // S4 checklist
+  const checkRows = document.querySelectorAll('.checklist-table tbody tr');
+  let s4checklist = '';
+  checkRows.forEach((tr, i) => {
+    const checked = tr.querySelector('.step-check')?.checked ? '✓' : '☐';
+    const finding = getVal(tr.querySelector('.finding-input'));
+    s4checklist += `  Step ${i+1} ${checked}: ${finding}\n`;
+  });
+
+  // S4 journal entries
+  const jeRows = document.querySelectorAll('#je-body tr');
+  let s4je = '';
+  jeRows.forEach((tr, i) => {
+    const cols = tr.querySelectorAll('.je-write');
+    const desc = cols[0] ? cols[0].innerText.trim() || '(blank)' : '(blank)';
+    const je   = cols[1] ? cols[1].innerText.trim() || '(blank)' : '(blank)';
+    s4je += `  JE ${i+1}:\n    Issue: ${desc}\n    Entry: ${je}\n`;
+  });
+
+  // S5
+  const s5a = getVal(document.querySelector('.prompt-write'));
+  const s5textareas = document.querySelectorAll('.verify-open-textarea');
+  const s5b = getVal(s5textareas[0]);
+  const s5c = getVal(s5textareas[1]);
+
+  const body =
+`RECESS — SENIOR ACCOUNTANT ASSESSMENT SUBMISSION
+=================================================
+Candidate:   ${candidate}
+Date:        ${date}
+Interviewer: ${intervwr}
+
+─────────────────────────────────────
+SECTION 1 — MONDAY MORNING INBOX
+─────────────────────────────────────
+Inbox Rankings & H/D/W:
+${s1}
+Reasoning for Top 3:
+${s1c}
+
+─────────────────────────────────────
+SECTION 2 — TASK & WORKFLOW MANAGEMENT
+─────────────────────────────────────
+${s2}
+─────────────────────────────────────
+SECTION 3 — PROCESS DOCUMENTATION (SOP)
+─────────────────────────────────────
+${s3}
+
+─────────────────────────────────────
+SECTION 4 — MONTH-END CLOSE CHECKLIST
+─────────────────────────────────────
+Checklist Findings:
+${s4checklist}
+Correcting Journal Entries:
+${s4je}
+─────────────────────────────────────
+SECTION 5 — AI FLUENCY
+─────────────────────────────────────
+A) AI Prompt:
+${s5a}
+
+B) Pre-Send Verification Steps:
+${s5b}
+
+C) AI Workflow / Time-Saving Response:
+${s5c}
+`;
+
+  const subject = encodeURIComponent(`Assessment Submission — ${candidate} — ${date}`);
+  const bodyEnc = encodeURIComponent(body);
+  window.location.href = `mailto:ines@recess.is?subject=${subject}&body=${bodyEnc}`;
+}
+</script>
+</body>
+</html>
